@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doomed Dice Challenge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 50%;
+            margin: auto;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        pre {
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: left;
+            max-width: 90%;
+            margin: 20px auto;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Doomed Dice Challenge 🎲</h1>
+    
+    <div class="container">
+        <p>Click the button to fetch dice probabilities from the Flask API.</p>
+        <button onclick="fetchData()">Get Probabilities</button>
+        <pre id="output">Waiting for response...</pre>
+    </div>
+
+    <script>
+        function fetchData() {
+            fetch('http://127.0.0.1:5000/compute_probabilities')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('output').innerText = "Error fetching data!";
+                console.error("Error:", error);
+            });
+        }
+    </script>
+
+</body>
+</html>
