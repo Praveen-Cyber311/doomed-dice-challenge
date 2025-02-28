@@ -4,79 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doomed Dice Challenge</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
             text-align: center;
-            margin: 0;
             padding: 20px;
+            background-color: #f4f4f4;
         }
-
         h1 {
             color: #333;
         }
-
         .container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 50%;
             margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
         }
-
         button {
-            background-color: #007bff;
+            padding: 12px 20px;
+            margin: 10px;
+            font-size: 16px;
+            background: #28a745;
             color: white;
             border: none;
-            padding: 10px 20px;
-            margin-top: 10px;
-            font-size: 16px;
             border-radius: 5px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: 0.3s;
         }
-
         button:hover {
-            background-color: #0056b3;
+            background: #218838;
         }
-
-        pre {
-            background: #333;
-            color: #fff;
+        .output {
+            margin-top: 20px;
             padding: 10px;
-            border-radius: 5px;
+            background: #fff3cd;
+            border-left: 5px solid #ffae42;
+            display: inline-block;
             text-align: left;
-            max-width: 90%;
-            margin: 20px auto;
-            overflow-x: auto;
+        }
+        .output p {
+            margin: 5px;
         }
     </style>
 </head>
 <body>
-
-    <h1>Doomed Dice Challenge 🎲</h1>
-    
     <div class="container">
-        <p>Click the button to fetch dice probabilities from the Flask API.</p>
-        <button onclick="fetchData()">Get Probabilities</button>
-        <pre id="output">Waiting for response...</pre>
+        <h1>Doomed Dice Challenge</h1>
+        <button id="rollDice">🎲 Roll Dice</button>
+        <button id="getProbabilities">📊 Get Probabilities</button>
+        <button id="undoomDice">🔄 Undoom Dice</button>
+
+        <div id="result" class="output"></div>
+        <div id="probabilities" class="output"></div>
+        <div id="undoomed" class="output"></div>
     </div>
 
     <script>
-        function fetchData() {
-            fetch('http://127.0.0.1:5000/compute_probabilities')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('output').innerText = JSON.stringify(data, null, 2);
-            })
-            .catch(error => {
-                document.getElementById('output').innerText = "Error fetching data!";
-                console.error("Error:", error);
-            });
-        }
-    </script>
+       $(document).ready(function() {
+    $("#rollDice").click(function() {
+        $.get("http://127.0.0.1:5000/roll", function(data) {
+            $("#result").html(`<p>🎲 Die A: ${data["Die A"]}, Die B: ${data["Die B"]}, Sum: <strong>${data["Sum"]}</strong></p>`);
+        }).fail(function() {
+            alert("Error connecting to server. Make sure Flask is running.");
+        });
+    });
 
+    $("#getProbabilities").click(function() {
+        $.get("http://127.0.0.1:5000/probabilities", function(data) {
+            let output = "<h3>📊 Sum Probabilities</h3>";
+            for (let key in data) {
+                output += `<p>Sum ${key}: <strong>${(data[key] * 100).toFixed(2)}%</strong></p>`;
+            }
+            $("#probabilities").html(output);
+        }).fail(function() {
+            alert("Error connecting to server.");
+        });
+    });
+
+    $("#undoomDice").click(function() {
+        $.get("http://127.0.0.1:5000/undoom", function(data) {
+            $("#undoomed").html(`<p>🔄 New Die A: [${data["New Die A"].join(", ")}]<br>New Die B: [${data["New Die B"].join(", ")}]</p>`);
+        }).fail(function() {
+            alert("Error connecting to server.");
+        });
+    });
+});
+    </script>
 </body>
 </html>
